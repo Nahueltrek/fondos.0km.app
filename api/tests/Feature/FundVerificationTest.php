@@ -87,6 +87,20 @@ class FundVerificationTest extends TestCase
         $this->assertFalse($superAdmin->can('delete', $verification));
     }
 
+    public function test_admin_show_includes_verification_history(): void
+    {
+        Sanctum::actingAs($this->curador());
+        $fund = Fund::factory()->create(['verification_status' => 'pending']);
+
+        $this->postJson("/api/admin/funds/{$fund->id}/verify", ['verification_status' => 'needs_review'])->assertOk();
+        $this->postJson("/api/admin/funds/{$fund->id}/verify", ['verification_status' => 'verified'])->assertOk();
+
+        $response = $this->getJson("/api/admin/funds/{$fund->id}");
+
+        $response->assertOk();
+        $this->assertCount(2, $response->json('verifications'));
+    }
+
     public function test_curador_can_create_verification_but_comercial_cannot(): void
     {
         $fund = Fund::factory()->create();

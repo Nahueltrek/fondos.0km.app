@@ -11,8 +11,9 @@ import SolucionesTurismo from "./pages/SolucionesTurismo";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Checklist from "./pages/Checklist";
+import AdminApp from "./admin/AdminApp";
 
-export default function App() {
+function PublicSite() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-300">
       <Header />
@@ -32,5 +33,14 @@ export default function App() {
       <Footer />
       <WhatsAppButton />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/admin/*" element={<AdminApp />} />
+      <Route path="/*" element={<PublicSite />} />
+    </Routes>
   );
 }

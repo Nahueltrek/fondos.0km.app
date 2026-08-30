@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
         Route::get('/funds', [AdminFundController::class, 'index']);
+        Route::get('/funds/{fund}', [AdminFundController::class, 'show']);
         Route::post('/funds', [AdminFundController::class, 'store']);
         Route::put('/funds/{fund}', [AdminFundController::class, 'update']);
         Route::patch('/funds/{fund}', [AdminFundController::class, 'update']);

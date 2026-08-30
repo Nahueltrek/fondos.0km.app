@@ -53,6 +53,17 @@ class AuthorizationTest extends TestCase
         ])->assertCreated();
     }
 
+    public function test_curador_can_view_a_single_fund_but_comercial_cannot(): void
+    {
+        $fund = Fund::factory()->create();
+
+        Sanctum::actingAs($this->userWithRole('curador'));
+        $this->getJson("/api/admin/funds/{$fund->id}")->assertOk()->assertJsonFragment(['id' => $fund->id]);
+
+        Sanctum::actingAs($this->userWithRole('comercial'));
+        $this->getJson("/api/admin/funds/{$fund->id}")->assertForbidden();
+    }
+
     public function test_curador_can_verify_a_fund(): void
     {
         Sanctum::actingAs($this->userWithRole('curador'));

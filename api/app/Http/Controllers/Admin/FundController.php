@@ -29,6 +29,14 @@ class FundController extends Controller
         );
     }
 
+    /** Panel /admin: ficha de un fondo puntual, con su historial de verificación. */
+    public function show(Fund $fund)
+    {
+        $this->authorize('view', $fund);
+
+        return response()->json($fund->load('verifications'));
+    }
+
     public function store(StoreFundRequest $request)
     {
         $fund = Fund::create($request->validated());
