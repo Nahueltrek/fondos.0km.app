@@ -100,6 +100,11 @@ DB_PORT=3306
 DB_DATABASE=el_nombre_que_creaste
 DB_USERNAME=el_usuario_que_creaste
 DB_PASSWORD=la_contraseña_que_creaste
+
+# Fase D: config/cors.php lee esta variable para el origen permitido.
+# Sin ella cae al default embebido (https://fondos.0km.app), que ya es
+# correcto para este proyecto — pero conviene fijarla explícitamente.
+FRONTEND_URL=https://fondos.0km.app
 ```
 
 **`APP_DEBUG=false` es obligatorio en producción** — con `true`, un error
@@ -251,3 +256,26 @@ esté realmente parada donde pensás — si movés la carpeta en la que estás
 parado, `pwd` (en bash) sigue mostrando la ruta vieja aunque la carpeta
 física ya esté en otro lado, lo que puede hacer que comandos posteriores
 (`rm -rf`, etc.) actúen sobre el lugar equivocado sin avisar.
+
+### 4. Sin `config/cors.php`, la API respondía bien pero el navegador bloqueaba todo igual
+
+Detectado antes de desplegar Fase D, no en producción — pero hubiera
+pasado igual si no se revisaba. Laravel registra `HandleCors` en el
+middleware global por defecto, pero ese middleware lee
+`config('cors.paths', [])`: sin un `config/cors.php` publicado en la
+app (no viene por defecto fuera del skeleton inicial), esa config
+nunca existe y el default es `[]` — ninguna ruta hace match, así que
+nunca se agregan headers `Access-Control-Allow-Origin`. La API
+responde 200 perfecto por Postman/curl, pero un fetch real desde
+`fondos.0km.app` hacia `api.fondos.0km.app` lo bloquea el navegador
+**en silencio** — el error aparece solo en la consola del navegador
+del visitante, nunca en los logs del servidor, lo que lo hace muy
+difícil de diagnosticar a distancia.
+
+Se agregó `api/config/cors.php` con los orígenes de `fondos.0km.app`
+permitidos (ver también `FRONTEND_URL` en el paso 4 de arriba) y un
+test (`FundApiTest::test_public_endpoint_sends_cors_header_for_frontend_origin`)
+que falla en CI si este archivo vuelve a faltar. **Importante:** este
+archivo es código de la app (`api/config/cors.php`), así que un
+`git pull`/subida normal ya lo incluye — no requiere ningún paso
+manual adicional en el servidor, más allá de lo que dice el paso 10.
