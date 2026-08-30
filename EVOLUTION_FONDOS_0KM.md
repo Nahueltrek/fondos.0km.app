@@ -4,6 +4,13 @@
 > `Nahueltrek/nahueltrek-site` (Fase 0-1). La copia canónica vive ahora acá,
 > en `Nahueltrek/fondos.0km.app`, y se sigue actualizando con el estado real
 > del proyecto.
+>
+> **Cambio de arquitectura (mismo día):** el backend dejó de ser Supabase
+> y pasó a ser **Laravel + MySQL** (ver `ARCHITECTURE_FONDOS_0KM.md`,
+> nota de superación). La tabla de fases de abajo describe el estado
+> previo al pivote (Fase 6 con Supabase); ver la sección "Fase 1 —
+> Infraestructura + Conversión" al final de este documento para el
+> estado real y vigente del backend.
 
 Roadmap de `fondos.0km.app` adaptado al estado real encontrado en la
 auditoría (proyecto inexistente, se parte de cero) y a las fases del
@@ -66,14 +73,46 @@ credenciales reales produciría funcionalidad de apariencia completa pero
 falsa (contraviene REGLA 9 y REGLA 11: no inventar datos ni resultados).
 Quedan como próximos pasos concretos, priorizables por Nahuel.
 
+## Fase 1 — Infraestructura + Conversión + Ecosistema Visual (vigente)
+
+Reemplaza el punto "Fase 6 — CRM" de la tabla de arriba en lo que respecta
+al backend. Orden de ejecución acordado (16 pasos), estado a la fecha:
+
+| Bloque | Contenido | Estado |
+|---|---|---|
+| 0 | Scaffold Laravel 13 API-only + Sanctum, en `api/` (monorepo) | ✅ |
+| 1-2 | Enums PHP + migraciones (funds, fund_verifications, user_roles, leads), con los 6 hallazgos de `SCHEMA_REVIEW_FONDOS_0KM.md` ya incorporados | ✅ |
+| 3 | Modelos Eloquent + relaciones + `Fund::verified()` scope | ✅ |
+| 4 | Policies + Form Requests (autorización por rol, sin RLS) | ✅ |
+| 5-6 | `LeadScoringService`, Controllers públicos/admin, rutas API, 35 tests Feature en verde | ✅ |
+| 7 | Seeders de desarrollo (roles + fondos `[DEV]`), bloqueados en producción | ✅ |
+| 8 | `DEPLOY_API.md`, `ENVIRONMENT.md`, `MakeSuperAdmin` command | ✅ (este commit) |
+| — | Crear el proyecto MySQL real en el hosting y desplegar (`DEPLOY_API.md`) | ⬜ Pendiente — requiere acceso al servidor que solo tiene Nahuel |
+| — | Fase D: conectar el frontend (`src/lib/api.js`, `scoring.js`, `Diagnostico.jsx`, `WhatsAppButton.jsx`) a esta API en vez de Supabase/placeholders | ⬜ Pendiente |
+| — | Design System 0km (`DESIGN_SYSTEM_0KM.md`) | ⬜ Pendiente — esperando capturas de `0km.app` |
+| — | Cargar 5-10 fondos reales verificados | ⬜ Pendiente — requiere fuentes oficiales |
+| — | Admin `/admin` en el frontend (hoy solo existe la API) | ⬜ Pendiente |
+
+Todo lo marcado ✅ fue validado localmente: `php artisan test` (35 tests),
+más pruebas manuales end-to-end con `php artisan serve` + curl (fondo
+verificado visible / no verificado oculto incluso por slug directo,
+scoring calculado en servidor ignorando valores del cliente, autorización
+por rol, historial de verificación append-only). Dos bugs reales
+aparecieron en esas pruebas manuales y quedaron corregidos antes de
+escribir los tests automatizados — ver el mensaje del commit del bloque
+5-6 para el detalle.
+
 ## Próximos pasos sugeridos (orden recomendado)
 
-1. Aprobar o corregir la decisión de arquitectura (`ARCHITECTURE_FONDOS_0KM.md`).
-2. Resolver acceso a `0km.app` / `go.0km.app` si se quiere alinear stack e
-   identidad visual antes de invertir más en UI definitiva.
-3. Crear proyecto Supabase real para `fondos-0km-app` y migrar los datos
-   placeholder a un esquema real vacío (sin datos ficticios).
+1. Desplegar `api/` en el hosting real siguiendo `api/DEPLOY_API.md`
+   (crear MySQL, subir código, migrar, crear el primer super_admin).
+2. Fase D: conectar el frontend a la API real (reemplaza el punto 3 del
+   listado anterior, que hablaba de Supabase — ya no aplica).
+3. Resolver acceso a `0km.app` si se quiere alinear identidad visual
+   antes de invertir más en UI definitiva (o avanzar solo con capturas,
+   como se acordó).
 4. Definir el primer lote de fondos reales a curar manualmente (Fase 3
-   real, con curador humano).
-5. Recién ahí: CRM, propuestas, blog, analytics, IA — en ese orden, cada
-   fase probada antes de pasar a la siguiente (REGLA 13).
+   real, con curador humano) y cargarlos vía el futuro panel `/admin` o
+   directo por API.
+5. Recién ahí: CRM más completo, propuestas, blog, analytics, IA — en ese
+   orden, cada fase probada antes de pasar a la siguiente (REGLA 13).

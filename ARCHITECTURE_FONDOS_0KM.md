@@ -3,6 +3,17 @@
 > **Nota (2026-08-30):** este documento se escribió originalmente dentro de
 > `Nahueltrek/nahueltrek-site` (Fase 0). La copia canónica vive ahora acá,
 > en `Nahueltrek/fondos.0km.app`.
+>
+> **⚠️ SUPERADO (2026-08-30, más tarde el mismo día):** la decisión de
+> stack de este documento (Supabase) fue reemplazada por decisión
+> explícita de Nahuel: **Laravel + MySQL** para el backend, React/Vite se
+> mantiene para el frontend. Motivo: mantener la base de datos y la
+> lógica de negocio bajo infraestructura controlada por 0km, en vez de un
+> proveedor externo (Supabase nunca llegó a tener un proyecto real
+> creado — no hubo datos que migrar). Ver `api/README.md`,
+> `api/DEPLOY_API.md` y `SCHEMA_REVIEW_FONDOS_0KM.md` para la
+> arquitectura vigente. Este documento se conserva como registro
+> histórico de la primera decisión, no como referencia activa.
 
 **Estado:** Decisión provisional (ver `AUDIT_FONDOS_0KM.md` sección 4.1 —
 tomada sin acceso a `0km.app` ni `go.0km.app`). Aprobada explícitamente por

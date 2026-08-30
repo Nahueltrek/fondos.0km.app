@@ -1,0 +1,195 @@
+# DEPLOY_API.md — desplegar el backend Laravel en el hosting real
+
+Esta sesión **no tiene acceso SSH** al hosting (comprobado antes, al
+intentar desplegar el frontend). Todo lo de acá lo tenés que correr vos
+en el servidor. Si algo falla, pegame el mensaje de error exacto y lo
+resolvemos juntos.
+
+Todo lo de `api/` fue validado localmente (35 tests en verde, `php artisan
+serve` + pruebas manuales con curl) antes de escribir esto — el código
+funciona, lo que falta es la parte de infraestructura que solo vos podés
+hacer.
+
+## 0. Requisitos del hosting
+
+Antes de nada, confirmá esto en tu panel (cPanel u otro):
+
+- **PHP 8.3 o superior** (Laravel 13 lo exige). Muchos hostings compartidos
+  traen una versión más vieja por default — buscá "Select PHP Version" o
+  "MultiPHP Manager" en cPanel y cambiala para este dominio/subdominio.
+- **Composer disponible por SSH.** Probá `composer --version` en tu
+  terminal SSH. Si no está, algunos cPanel lo traen como
+  `/opt/cpanel/composer/bin/composer` o similar — si no aparece, avisame.
+- **Una base de datos MySQL** (la mayoría de los hostings compartidos ya
+  la incluyen). La creás en cPanel → "MySQL Databases".
+- **Extensiones PHP**: mbstring, openssl, pdo_mysql, tokenizer, xml, ctype,
+  json, bcmath — casi todos los hostings las traen activadas por default
+  para Laravel; si algo falla al correr composer, suele ser por acá.
+
+## 1. Subir el código
+
+Igual que hicimos con el frontend: no puedo hacer `git clone` en tu
+servidor. Opciones:
+
+- **Si tu hosting tiene git por SSH**: `git clone https://github.com/Nahueltrek/fondos.0km.app.git`
+  y después trabajás dentro de la carpeta `api/`.
+- **Si no**: te paso un `.zip` de la carpeta `api/` (sin `vendor/` ni
+  `.env`, para que pese poco) y lo subís por SFTP, igual que el `dist/`
+  del frontend.
+
+## 2. Ubicación en el servidor — importante
+
+Laravel sirve la app desde la carpeta `api/public/`, **no** desde `api/`
+directamente. Si apuntás el dominio a `api/` vas a exponer el código
+fuente (`.env` incluido) en vez de la aplicación — un problema de
+seguridad real, no solo estético.
+
+Dos formas de resolverlo, de mejor a peor:
+
+**Opción A (recomendada): subdominio dedicado.**
+Creá un subdominio, por ejemplo `api.fondos.0km.app`, y en cPanel →
+"Subdomains" o "Domains", apuntá su **document root** directamente a
+`api/public/`. Así `https://api.fondos.0km.app/` sirve la API limpia.
+
+**Opción B: sin subdominio, con redirect.**
+Si no podés crear un subdominio, algunos hostings permiten servir Laravel
+desde una subcarpeta con un `.htaccess` que redirige todo hacia
+`public/`. Es más frágil y depende de la configuración exacta de Apache
+de tu hosting — si tenés que usar esta opción, avisame y armamos el
+`.htaccess` específico una vez que sepamos cómo responde tu servidor.
+
+## 3. Crear la base de datos MySQL
+
+En cPanel → "MySQL Databases":
+
+1. Creá una base (ej. `usuario_fondos_api`).
+2. Creá un usuario MySQL con contraseña fuerte.
+3. Asignale al usuario **todos los privilegios** sobre esa base
+   específica (no hace falta más que eso).
+
+Guardá: nombre de la base, usuario, contraseña, host (normalmente
+`localhost` o `127.0.0.1` en hosting compartido) y puerto (`3306` por
+defecto).
+
+## 4. Configurar `.env`
+
+En el servidor, dentro de `api/`:
+
+```bash
+cp .env.example .env
+```
+
+Editá `.env` (con el editor de archivos de cPanel o `nano`/`vi` por SSH)
+y completá, como mínimo:
+
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://api.fondos.0km.app
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=el_nombre_que_creaste
+DB_USERNAME=el_usuario_que_creaste
+DB_PASSWORD=la_contraseña_que_creaste
+```
+
+**`APP_DEBUG=false` es obligatorio en producción** — con `true`, un error
+cualquiera expone rutas de archivos y detalles internos del servidor a
+quien sea que lo vea (ver ENVIRONMENT.md).
+
+## 5. Instalar dependencias y preparar la app
+
+Todo esto desde SSH, parado en `api/`:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan key:generate
+php artisan config:cache
+php artisan route:cache
+```
+
+Si `composer install` falla por versión de PHP o memoria, pegame el error
+completo.
+
+## 6. Migrar la base de datos
+
+```bash
+php artisan migrate --force
+```
+
+El `--force` es necesario porque `APP_ENV=production` — es la
+confirmación de que sabés que estás corriendo migraciones en producción,
+no un typo.
+
+**Nunca corras `php artisan db:seed` en este entorno** — igual no haría
+nada (`DatabaseSeeder` está bloqueado fuera de `local`/`testing`), pero
+ni siquiera hace falta intentarlo: los datos de desarrollo `[DEV]` no
+deben existir acá.
+
+## 7. Crear el primer super_admin
+
+Una sola vez, después de migrar:
+
+```bash
+php artisan app:make-super-admin
+```
+
+Te va a pedir nombre, email y contraseña interactivamente (la contraseña
+no se muestra en pantalla mientras la escribís). Con eso ya podés hacer
+login en `/api/auth/login` y vas a tener acceso completo al futuro panel
+`/admin`.
+
+## 8. Permisos de archivos
+
+Las carpetas `storage/` y `bootstrap/cache/` tienen que ser escribibles
+por el proceso PHP del servidor:
+
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+Si tu hosting usa un usuario/grupo específico para PHP (común en cPanel),
+puede que necesites ajustar el owner también — si `storage/logs` no se
+puede escribir vas a ver un error 500 apenas algo intente loguear.
+
+## 9. Verificar que quedó arriba
+
+```bash
+curl https://api.fondos.0km.app/up
+```
+
+Debería responder `200`. Después probá un endpoint real:
+
+```bash
+curl https://api.fondos.0km.app/api/funds
+```
+
+Debería responder `[]` (array vacío) si todavía no cargaste fondos
+reales — eso es correcto, no un error.
+
+## 10. Actualizaciones futuras
+
+Cada vez que haya cambios nuevos en `api/` para desplegar:
+
+```bash
+git pull origin main   # o volver a subir el zip actualizado
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+```
+
+## Checklist rápido
+
+- [ ] PHP 8.3+ confirmado en el hosting.
+- [ ] Subdominio (o subcarpeta) apuntando a `api/public/`, no a `api/`.
+- [ ] Base MySQL creada, con usuario y privilegios.
+- [ ] `.env` completo, con `APP_ENV=production` y `APP_DEBUG=false`.
+- [ ] `composer install --no-dev` corrido sin errores.
+- [ ] `php artisan migrate --force` corrido sin errores.
+- [ ] `php artisan app:make-super-admin` corrido una vez.
+- [ ] `storage/` y `bootstrap/cache/` escribibles.
+- [ ] `GET /up` responde 200.
+- [ ] `GET /api/funds` responde `[]` (o los fondos reales, si ya cargaste alguno).
