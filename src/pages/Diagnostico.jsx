@@ -4,6 +4,9 @@ import { CATEGORIAS } from "../data/categorias";
 import { SOLUCIONES } from "../data/soluciones";
 import MatchingDisclaimer from "../components/MatchingDisclaimer";
 import { fundWhatsAppMessage } from "../components/WhatsAppButton";
+import { createLead } from "../lib/api";
+import { scoreLead } from "../lib/scoring";
+import { track } from "../lib/analytics";
 
 const ETAPAS = ["Idea", "Postulación", "Fondo adjudicado", "Ejecución", "Negocio funcionando"];
 
@@ -46,15 +49,45 @@ export default function Diagnostico() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
   const [done, setDone] = useState(false);
+  const [leadResult, setLeadResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
-  const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  const next = () => {
+    if (step === 0) track("diagnostic_started", { tipo: form.tipo });
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    // NOTA: sin backend conectado en esta iteración, no se crea un Lead
-    // real (tabla `leads`, sección 24). Ver EVOLUTION_FONDOS_0KM.md, fase 6.
+    setSubmitting(true);
+
+    const score = scoreLead({
+      fundStatus: form.etapa,
+      budget: form.recursos,
+      needs: form.mejorar,
+      problem: form.problema,
+    });
+
+    const result = await createLead({
+      name: form.nombre,
+      email: form.email,
+      phone: form.whatsapp || null,
+      business_type: form.tipo,
+      fund_status: form.etapa,
+      needs: form.mejorar,
+      problem: form.problema,
+      budget: form.recursos,
+      score,
+      status: "nuevo",
+      source: "diagnostico",
+      fund_slug: fondoRelacionado || null,
+    });
+
+    setLeadResult(result);
+    track("diagnostic_completed", { tipo: form.tipo, score });
+    setSubmitting(false);
     setDone(true);
   };
 
@@ -92,6 +125,14 @@ export default function Diagnostico() {
           )}
           <MatchingDisclaimer />
         </div>
+
+        {leadResult && !leadResult.saved && (
+          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
+            Tus respuestas no se guardaron en un sistema todavía (no hay backend
+            de leads configurado en este ambiente). Escríbenos por WhatsApp
+            para que no se pierdan.
+          </p>
+        )}
 
         {fondoRelacionado && (
           <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
@@ -183,8 +224,12 @@ export default function Diagnostico() {
           <button type="button" onClick={back} disabled={step === 0} className="text-sm text-gray-500 disabled:opacity-0">
             Atrás
           </button>
-          <button type="submit" className="bg-brand text-white font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition">
-            {step === STEPS.length - 1 ? "Ver resultado" : "Siguiente"}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-brand text-white font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60"
+          >
+            {step === STEPS.length - 1 ? (submitting ? "Guardando…" : "Ver resultado") : "Siguiente"}
           </button>
         </div>
       </form>

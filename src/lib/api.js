@@ -37,3 +37,24 @@ export async function fetchFondoBySlug(slug) {
   }
   return data;
 }
+
+// Captura de leads (Master Plan, sección 24). Sin Supabase configurado no
+// hay dónde persistir el lead — se avisa por consola en vez de simular un
+// guardado exitoso (REGLA 11: no inventar resultados).
+export async function createLead(lead) {
+  if (!supabase) {
+    console.warn(
+      "No hay Supabase configurado: el lead no se guardó en ningún backend.",
+      lead
+    );
+    return { saved: false, lead };
+  }
+
+  const { data, error } = await supabase.from("leads").insert(lead).select().maybeSingle();
+
+  if (error) {
+    console.error("Error guardando lead en Supabase:", error.message);
+    return { saved: false, lead, error: error.message };
+  }
+  return { saved: true, lead: data };
+}

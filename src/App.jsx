@@ -7,6 +7,9 @@ import FondosExplorer from "./pages/FondosExplorer";
 import FondoDetail from "./pages/FondoDetail";
 import Diagnostico from "./pages/Diagnostico";
 import Soluciones from "./pages/Soluciones";
+import SolucionesTurismo from "./pages/SolucionesTurismo";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 export default function App() {
   return (
@@ -19,6 +22,9 @@ export default function App() {
           <Route path="/fondos/:slug" element={<FondoDetail />} />
           <Route path="/diagnostico" element={<Diagnostico />} />
           <Route path="/soluciones" element={<Soluciones />} />
+          <Route path="/soluciones/turismo" element={<SolucionesTurismo />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
         </Routes>
       </main>
       <Footer />

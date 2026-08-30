@@ -1,7 +1,14 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { SOLUCIONES } from "../data/soluciones";
+import { PACKS } from "../data/packs";
+import { track } from "../lib/analytics";
 
 export default function Soluciones() {
+  useEffect(() => {
+    track("solution_viewed", { page: "soluciones" });
+  }, []);
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-brand-dark mb-2">Soluciones 0km</h1>
@@ -9,7 +16,7 @@ export default function Soluciones() {
         Soluciones digitales que pueden acompañar el proyecto que financies.
       </p>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {SOLUCIONES.map((s) => (
           <div key={s.slug} className="bg-white border border-gray-200 rounded-xl p-5">
             <h3 className="font-semibold text-brand-dark mb-1">{s.nombre}</h3>
@@ -21,6 +28,32 @@ export default function Soluciones() {
                 </span>
               ))}
             </div>
+          </div>
+        ))}
+      </div>
+
+      <Link
+        to="/soluciones/turismo"
+        className="block bg-brand-light border border-brand/20 rounded-xl p-5 mb-10 hover:border-brand transition"
+      >
+        <h3 className="font-semibold text-brand-dark mb-1">Digitaliza tu experiencia turística →</h3>
+        <p className="text-sm text-brand-dark/80">
+          Vertical dedicada para operadores, guías, alojamientos y agencias.
+        </p>
+      </Link>
+
+      <h2 className="text-xl font-bold text-brand-dark mb-4">Packs</h2>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {PACKS.map((p) => (
+          <div key={p.slug} className="bg-white border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-brand-dark mb-1">{p.nombre}</h3>
+            <p className="text-sm text-gray-600 mb-3">{p.descripcion}</p>
+            <ul className="text-sm text-gray-700 list-disc list-inside mb-2">
+              {p.incluye.map((i) => <li key={i}>{i}</li>)}
+            </ul>
+            <p className="text-xs text-gray-400">
+              {p.precio ?? "Precio a definir según proyecto"}
+            </p>
           </div>
         ))}
       </div>

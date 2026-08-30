@@ -4,6 +4,7 @@ const NAV = [
   { to: "/fondos", label: "Fondos" },
   { to: "/diagnostico", label: "Diagnóstico" },
   { to: "/soluciones", label: "Soluciones" },
+  { to: "/blog", label: "Blog" },
 ];
 
 export default function Header() {

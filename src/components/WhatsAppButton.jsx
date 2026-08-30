@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { track } from "../lib/analytics";
 
 const WHATSAPP_NUMBER = ""; // TODO: definir número real de 0km antes de publicar.
 
@@ -18,6 +19,7 @@ export default function WhatsAppButton({ message = DEFAULT_MESSAGE }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Escribir por WhatsApp"
+      onClick={() => track("whatsapp_clicked")}
       className="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition"
     >
       <MessageCircle size={24} />

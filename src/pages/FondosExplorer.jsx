@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import Filters from "../components/Filters";
 import FundCard from "../components/FundCard";
 import { fetchFondos } from "../lib/api";
+import { track } from "../lib/analytics";
 
 export default function FondosExplorer() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,6 +32,28 @@ export default function FondosExplorer() {
     if (filters.estado) params.estado = filters.estado;
     setSearchParams(params, { replace: true });
   }, [query, filters, setSearchParams]);
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const timeout = setTimeout(() => {
+      if (query) track("fund_search", { query });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  useEffect(() => {
+    if (filters.categoria) track("filter_used", { filter: "categoria", value: filters.categoria });
+  }, [filters.categoria]);
+  useEffect(() => {
+    if (filters.region) track("filter_used", { filter: "region", value: filters.region });
+  }, [filters.region]);
+  useEffect(() => {
+    if (filters.estado) track("filter_used", { filter: "estado", value: filters.estado });
+  }, [filters.estado]);
 
   const filtered = useMemo(() => {
     return fondos.filter((f) => {

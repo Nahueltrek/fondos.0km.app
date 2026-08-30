@@ -4,13 +4,20 @@ import { Building2, MapPin, Calendar, ExternalLink } from "lucide-react";
 import FundStatusBadge from "../components/FundStatusBadge";
 import DisclaimerBanner from "../components/DisclaimerBanner";
 import { fetchFondoBySlug } from "../lib/api";
+import { track } from "../lib/analytics";
 
 export default function FondoDetail() {
   const { slug } = useParams();
   const [fondo, setFondo] = useState(undefined); // undefined = cargando, null = no existe
 
   useEffect(() => {
-    fetchFondoBySlug(slug).then(setFondo);
+    fetchFondoBySlug(slug).then((data) => {
+      setFondo(data);
+      if (data) {
+        track("fund_viewed", { slug: data.slug, name: data.name });
+        document.title = `${data.name} — fondos.0km.app`;
+      }
+    });
   }, [slug]);
 
   if (fondo === undefined) {
