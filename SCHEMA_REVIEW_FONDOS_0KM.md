@@ -1,5 +1,10 @@
 # SCHEMA_REVIEW_FONDOS_0KM.md
 
+> **✅ Aprobado por Nahuel (2026-08-30).** Se suma como requisito de
+> aceptación adicional la prueba de seguridad RLS de la sección 9. El
+> código de la aplicación permanece intacto hasta tener las credenciales
+> de Supabase — nada de este documento se aplica todavía.
+
 Auditoría de `supabase-schema.sql` previa a su ejecución en el proyecto
 Supabase real, según lo pedido en la Fase 1 (punto 2). **No se ejecutó ni
 se modificó el archivo todavía** — este documento solo describe hallazgos
@@ -164,3 +169,40 @@ aviso, aplico este diff al archivo, y recién ahí te paso el SQL final para
 correr en el SQL Editor de Supabase (o lo corro yo si en algún momento
 preferís darme un método de ejecución — por ahora asumo que lo pegás vos
 ahí, como hiciste con nahueltrek-site).
+
+## 9. Requisito de aceptación: prueba de seguridad RLS
+
+Agregado por decisión de Nahuel (2026-08-30). Los pasos 2-4 del orden de
+implementación (Schema+RLS, persistencia de leads, diagnóstico) **no se
+consideran terminados** hasta que estas pruebas pasen contra el proyecto
+Supabase real — no alcanza con que el schema "se vea bien", hay que
+verificar que las políticas efectivamente bloquean lo que deben bloquear.
+
+Se corren desde el SQL Editor de Supabase, alternando entre el rol `anon`
+(usuario público, sin sesión) y usuarios autenticados con cada rol de
+`user_roles`. Cada fila es un caso pass/fail, no una sugerencia:
+
+| # | Caso | Actor | Acción | Resultado esperado |
+|---|---|---|---|---|
+| 1 | Lectura pública de fondos verificados | `anon` | `select * from funds where verification_status = 'verified'` | ✅ Devuelve filas |
+| 2 | Lectura pública de fondos NO verificados | `anon` | `select * from funds where verification_status != 'verified'` | ✅ Devuelve **0 filas** (aunque existan en la tabla) |
+| 3 | Escritura pública de fondos | `anon` | `insert`/`update`/`delete` sobre `funds` | ❌ Rechazado por RLS |
+| 4 | Creación pública de leads | `anon` | `insert into leads (...)` con datos válidos | ✅ Se inserta correctamente |
+| 5 | Lectura pública de leads | `anon` | `select * from leads` | ✅ Devuelve **0 filas** (nunca debe poder leer leads ajenos) |
+| 6 | Modificación pública de leads | `anon` | `update leads set status = 'ganado'` | ❌ Rechazado por RLS |
+| 7 | Lectura pública de historial de verificación | `anon` | `select * from fund_verifications` | ✅ Devuelve **0 filas** |
+| 8 | Curador ve fondos no verificados | usuario con `role = 'curador'` | `select * from funds` | ✅ Devuelve **todas** las filas, incluidas `pending`/`needs_review` |
+| 9 | Curador edita fondos | usuario con `role = 'curador'` | `update funds set ...` | ✅ Permitido |
+| 10 | Curador inserta verificación | usuario con `role = 'curador'` | `insert into fund_verifications (...)` | ✅ Permitido |
+| 11 | Curador edita/borra historial pasado | usuario con `role = 'curador'` | `update`/`delete` sobre `fund_verifications` | ❌ Rechazado (historial de solo-inserción, hallazgo 5) |
+| 12 | Comercial ve y gestiona leads | usuario con `role = 'comercial'` | `select`/`update` sobre `leads` | ✅ Permitido |
+| 13 | Comercial no puede escribir fondos | usuario con `role = 'comercial'` | `insert`/`update` sobre `funds` | ❌ Rechazado |
+| 14 | Usuario autenticado sin rol asignado | usuario en `auth.users` pero sin fila en `user_roles` | `select` sobre `leads` o `funds` no-verificados | ❌ Rechazado (se comporta igual que `anon`) |
+| 15 | Un usuario lee el rol de otro | cualquier usuario autenticado | `select * from user_roles where user_id != auth.uid()` | ❌ Rechazado (solo `super_admin` puede ver todos) |
+| 16 | Escalar el propio rol | usuario sin rol `super_admin` | `update user_roles set role = 'super_admin' where user_id = auth.uid()` | ❌ Rechazado |
+
+**Cómo documentar el resultado:** al ejecutar estas pruebas, se anota acá
+mismo (o en un archivo `RLS_TEST_RESULTS.md`) fecha, resultado de cada
+caso y capturas/output si algo falla. Si cualquier caso falla, se corrige
+la política antes de pasar al paso 5 (WhatsApp) — no se avanza con RLS
+roto, aunque el resto de la app ya funcione.
