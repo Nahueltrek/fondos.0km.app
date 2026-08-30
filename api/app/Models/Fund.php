@@ -7,6 +7,7 @@ use App\Enums\SourceType;
 use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Fund extends Model
 {
+    use HasFactory;
+
     // Coinciden con los defaults de la migración — Eloquent no refleja el
     // default de la columna en el objeto recién creado en memoria hasta
     // refrescarlo desde la base, así que se declaran también acá.
