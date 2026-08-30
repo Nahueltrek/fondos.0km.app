@@ -91,7 +91,7 @@ al backend. Orden de ejecución acordado (16 pasos), estado a la fecha:
 | — | Tema oscuro del frontend, alineado a `0km.app` (`DESIGN_SYSTEM_0KM.md`) | ✅ (2026-08-30) — paleta, componentes y páginas migrados; verificado con build + capturas Playwright |
 | — | Fase D: conectar el frontend (`src/lib/api.js`, `Diagnostico.jsx`, `Checklist.jsx`) a esta API en vez de Supabase/placeholders | ✅ (2026-08-30) — en producción. `fondos.0km.app` consume `api.fondos.0km.app` en vivo |
 | — | Cargar 5-10 fondos reales verificados | ⬜ Pendiente — requiere fuentes oficiales |
-| — | Admin `/admin` en el frontend (hoy solo existe la API) | ✅ (2026-08-30) — login, dashboard, fondos (listar/crear/editar/verificar) y leads (listar/ver/cambiar estado). Verificado end-to-end con Playwright; falta desplegar a producción |
+| — | Admin `/admin` en el frontend | ✅ (2026-08-30) — login, dashboard, fondos (listar/crear/editar/verificar) y leads (listar/ver/cambiar estado). En producción, confirmado por Nahuel en `https://fondos.0km.app/admin` |
 
 Todo lo marcado ✅ del backend fue validado con `php artisan test` (36
 tests, incluye un test de CORS agregado en Fase D), más pruebas manuales
@@ -116,6 +116,17 @@ dos bugs reales más antes/durante el deploy a producción:
    a `dist/` en cada build) con el rewrite estándar de SPA, y se eliminó
    la carpeta residual en el servidor. Confirmado por Nahuel en producción
    (2026-08-30).
+
+El panel `/admin` (bloque siguiente) encontró un tercer patrón del mismo
+tipo de bug: `php artisan route:cache` en el hosting sirve rutas desde un
+archivo compilado, no desde `routes/api.php` en disco — subir el archivo
+nuevo no alcanza, hace falta `route:clear` + `route:cache` de nuevo para
+que la ruta agregada (`GET /api/admin/funds/{fund}`) exista realmente.
+Confirmado con un `curl -I` que pasó de `405 (solo PUT, PATCH)` a `401`
+una vez recacheado. Ya estaba documentado en el paso 10 de
+`DEPLOY_API.md` ("Actualizaciones futuras"), pero conviene remarcarlo:
+cualquier cambio a `routes/api.php` en producción necesita ese paso, no
+alcanza con reemplazar el archivo.
 
 **Desplegado en producción (2026-08-30):** `api/config/cors.php` +
 `FRONTEND_URL` están en `https://api.fondos.0km.app` (CORS confirmado),
