@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Archivos y carpetas reales (JS, CSS, sitemap.xml, robots.txt, etc.)
+  # se sirven tal cual, sin pasar por el rewrite.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Todo lo demás son rutas de React Router (/fondos, /diagnostico, etc.)
+  # que no existen como archivo físico — caen a index.html para que el
+  # SPA las resuelva en el cliente.
+  RewriteRule ^ /index.html [L]
+</IfModule>
