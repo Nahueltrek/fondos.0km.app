@@ -89,7 +89,7 @@ al backend. Orden de ejecución acordado (16 pasos), estado a la fecha:
 | 8 | `DEPLOY_API.md`, `ENVIRONMENT.md`, `MakeSuperAdmin` command | ✅ |
 | 9 | Desplegar `api/` en el hosting real (MySQL creada, migrado, primer super_admin) | ✅ (2026-08-30) — `https://api.fondos.0km.app` en producción, confirmado con `/up`, `/api/funds`, login + `/api/admin/dashboard` reales |
 | — | Tema oscuro del frontend, alineado a `0km.app` (`DESIGN_SYSTEM_0KM.md`) | ✅ (2026-08-30) — paleta, componentes y páginas migrados; verificado con build + capturas Playwright |
-| — | Fase D: conectar el frontend (`src/lib/api.js`, `Diagnostico.jsx`, `Checklist.jsx`) a esta API en vez de Supabase/placeholders | ✅ (2026-08-30) — verificado end-to-end en local (fetch real con CORS, lead persistido con score del servidor); falta desplegar a producción (subir `api/config/cors.php`, ver más abajo) |
+| — | Fase D: conectar el frontend (`src/lib/api.js`, `Diagnostico.jsx`, `Checklist.jsx`) a esta API en vez de Supabase/placeholders | ✅ (2026-08-30) — en producción. `fondos.0km.app` consume `api.fondos.0km.app` en vivo |
 | — | Cargar 5-10 fondos reales verificados | ⬜ Pendiente — requiere fuentes oficiales |
 | — | Admin `/admin` en el frontend (hoy solo existe la API) | ⬜ Pendiente |
 
@@ -101,29 +101,32 @@ ignorando valores del cliente, autorización por rol, historial de
 verificación append-only). Dos bugs reales aparecieron en esas pruebas
 manuales y quedaron corregidos antes de escribir los tests automatizados
 — ver el mensaje del commit del bloque 5-6 para el detalle. Fase D encontró
-un tercer bug real (`config/cors.php` faltante — ver `DEPLOY_API.md`,
-"Problemas reales que aparecieron", punto 4) antes de llegar a producción.
+dos bugs reales más antes/durante el deploy a producción:
 
-**Pendiente de despliegue:** el commit de Fase D (`api/config/cors.php` +
-`FRONTEND_URL`) todavía no está en `https://api.fondos.0km.app` — hace
-falta un `git pull` + `php artisan config:cache` en el hosting real (ver
-`DEPLOY_API.md`, paso 10) antes de que el frontend en producción pueda
-hablar con la API real sin que el navegador bloquee las peticiones por
-CORS. El frontend en `https://fondos.0km.app` tampoco tiene `VITE_API_URL`
-configurada todavía en su build de producción — sin eso, sigue sirviendo
-`FONDOS_PLACEHOLDER` aunque el código ya esté conectado.
+1. `config/cors.php` faltante en la API (ver `DEPLOY_API.md`, "Problemas
+   reales que aparecieron", punto 4) — sin headers CORS, el navegador
+   bloqueaba en silencio todo fetch cross-origin desde `fondos.0km.app`.
+   Corregido y confirmado en producción con `curl -I ... -H "Origin:
+   https://fondos.0km.app"` devolviendo `access-control-allow-origin`.
+2. Sin `.htaccess`, las rutas de React Router (`/fondos`, `/diagnostico`,
+   etc.) dependían de que no existiera ningún archivo/carpeta física con
+   ese nombre en el document root — y de hecho una carpeta vacía
+   `fondos/`, residuo de un deploy anterior, colisionaba con la ruta
+   `/fondos` y devolvía 403. Se agregó `public/.htaccess` (Vite lo copia
+   a `dist/` en cada build) con el rewrite estándar de SPA, y se eliminó
+   la carpeta residual en el servidor. Confirmado por Nahuel en producción
+   (2026-08-30).
+
+**Desplegado en producción (2026-08-30):** `api/config/cors.php` +
+`FRONTEND_URL` están en `https://api.fondos.0km.app` (CORS confirmado),
+y `https://fondos.0km.app` sirve un build con `VITE_API_URL` apuntando a
+la API real y `.htaccess` para las rutas de React Router. Fase D
+completa de punta a punta.
 
 ## Próximos pasos sugeridos (orden recomendado)
 
-1. Desplegar los cambios de Fase D al hosting real: subir `api/` actualizado
-   (trae `config/cors.php`), correr `php artisan config:cache`, y
-   configurar `VITE_API_URL` en el build de producción del frontend antes
-   de publicarlo — ver "Pendiente de despliegue" arriba.
-2. Resolver el rewrite `.htaccess` de rutas SPA en el hosting del frontend
-   (navegar directo a `/fondos/algun-slug` puede dar 404 hoy — no
-   implementado todavía).
-3. Definir el primer lote de fondos reales a curar manualmente (Fase 3
+1. Definir el primer lote de fondos reales a curar manualmente (Fase 3
    real, con curador humano) y cargarlos vía el futuro panel `/admin` o
    directo por API.
-4. Recién ahí: CRM más completo, propuestas, blog, analytics, IA — en ese
+2. Recién ahí: CRM más completo, propuestas, blog, analytics, IA — en ese
    orden, cada fase probada antes de pasar a la siguiente (REGLA 13).
