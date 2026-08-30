@@ -65,4 +65,16 @@ class FundApiTest extends TestCase
         $response->assertJsonCount(1);
         $response->assertJsonFragment(['slug' => 'turismo-a']);
     }
+
+    // Fase D: sin config/cors.php publicado, HandleCors no agrega headers
+    // y el navegador bloquea el fetch desde fondos.0km.app aunque la API
+    // responda 200 — este test existe para que ese regreso se note en CI,
+    // no solo en la consola del navegador de un usuario real.
+    public function test_public_endpoint_sends_cors_header_for_frontend_origin(): void
+    {
+        $response = $this->getJson('/api/funds', ['Origin' => 'https://fondos.0km.app']);
+
+        $response->assertOk();
+        $response->assertHeader('Access-Control-Allow-Origin', 'https://fondos.0km.app');
+    }
 }

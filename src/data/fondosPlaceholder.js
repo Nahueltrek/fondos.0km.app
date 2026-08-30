@@ -7,8 +7,9 @@
 // curación manual con fuentes oficiales verificadas
 // (ver DATA_GOVERNANCE_FONDOS_0KM.md).
 //
-// Cuando exista Supabase real conectado, este archivo se elimina y los
-// datos se sirven desde la tabla `funds`.
+// Cuando VITE_API_URL apunta a la API real (Fase D) y hay fondos
+// verificados cargados, este archivo deja de usarse — src/lib/api.js
+// solo cae acá si la API no está configurada o falla.
 
 export const FONDOS_PLACEHOLDER = [
   {

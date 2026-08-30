@@ -5,7 +5,6 @@ import { SOLUCIONES } from "../data/soluciones";
 import MatchingDisclaimer from "../components/MatchingDisclaimer";
 import { fundWhatsAppMessage } from "../components/WhatsAppButton";
 import { createLead } from "../lib/api";
-import { scoreLead } from "../lib/scoring";
 import { track } from "../lib/analytics";
 import { useDocumentTitle } from "../lib/useDocumentTitle";
 
@@ -65,13 +64,6 @@ export default function Diagnostico() {
     e.preventDefault();
     setSubmitting(true);
 
-    const score = scoreLead({
-      fundStatus: form.etapa,
-      budget: form.recursos,
-      needs: form.mejorar,
-      problem: form.problema,
-    });
-
     const result = await createLead({
       name: form.nombre,
       email: form.email,
@@ -81,14 +73,12 @@ export default function Diagnostico() {
       needs: form.mejorar,
       problem: form.problema,
       budget: form.recursos,
-      score,
-      status: "nuevo",
-      source: "diagnostico",
+      source: "diagnostic",
       fund_slug: fondoRelacionado || null,
     });
 
     setLeadResult(result);
-    track("diagnostic_completed", { tipo: form.tipo, score });
+    track("diagnostic_completed", { tipo: form.tipo });
     setSubmitting(false);
     setDone(true);
   };

@@ -37,7 +37,6 @@ export default function Checklist() {
       phone: form.whatsapp || null,
       business_type: form.rubro,
       needs: "Descargó el checklist de digitalización",
-      status: "nuevo",
       source: "checklist",
     });
 
