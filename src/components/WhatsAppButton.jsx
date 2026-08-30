@@ -1,7 +1,8 @@
 import { MessageCircle } from "lucide-react";
 import { track } from "../lib/analytics";
 
-const WHATSAPP_NUMBER = ""; // TODO: definir número real de 0km antes de publicar.
+// Fase 1, punto 13: número vía variable de entorno, nunca hardcodeado.
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER ?? "";
 
 // Mensajes exactos de la sección 37 del Master Plan.
 const DEFAULT_MESSAGE =
@@ -12,6 +13,10 @@ export function fundWhatsAppMessage(fundName) {
 }
 
 export default function WhatsAppButton({ message = DEFAULT_MESSAGE }) {
+  // Fase 1, punto 28: si no está configurado, el CTA se oculta —
+  // nunca se muestra un enlace roto (wa.me sin número).
+  if (!WHATSAPP_NUMBER) return null;
+
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   return (
     <a
