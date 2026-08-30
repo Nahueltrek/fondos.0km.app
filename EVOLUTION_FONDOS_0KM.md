@@ -91,7 +91,7 @@ al backend. Orden de ejecución acordado (16 pasos), estado a la fecha:
 | — | Tema oscuro del frontend, alineado a `0km.app` (`DESIGN_SYSTEM_0KM.md`) | ✅ (2026-08-30) — paleta, componentes y páginas migrados; verificado con build + capturas Playwright |
 | — | Fase D: conectar el frontend (`src/lib/api.js`, `Diagnostico.jsx`, `Checklist.jsx`) a esta API en vez de Supabase/placeholders | ✅ (2026-08-30) — en producción. `fondos.0km.app` consume `api.fondos.0km.app` en vivo |
 | — | Cargar 5-10 fondos reales verificados | ⬜ Pendiente — requiere fuentes oficiales |
-| — | Admin `/admin` en el frontend (hoy solo existe la API) | ⬜ Pendiente |
+| — | Admin `/admin` en el frontend (hoy solo existe la API) | ✅ (2026-08-30) — login, dashboard, fondos (listar/crear/editar/verificar) y leads (listar/ver/cambiar estado). Verificado end-to-end con Playwright; falta desplegar a producción |
 
 Todo lo marcado ✅ del backend fue validado con `php artisan test` (36
 tests, incluye un test de CORS agregado en Fase D), más pruebas manuales
