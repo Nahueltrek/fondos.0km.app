@@ -1,5 +1,12 @@
 # DEPLOY_API.md — desplegar el backend Laravel en el hosting real
 
+> **✅ Ya desplegado (2026-08-30)**: `https://api.fondos.0km.app` está en
+> producción, confirmado con `/up`, `/api/funds`, login de admin y
+> `/api/admin/dashboard` reales. Esta guía queda para la próxima vez que
+> haga falta reinstalar desde cero, o como referencia de lo que se hizo.
+> Ver la sección "Problemas reales que aparecieron" al final — dos cosas
+> no obvias que costó diagnosticar la primera vez.
+
 Esta sesión **no tiene acceso SSH** al hosting (comprobado antes, al
 intentar desplegar el frontend). Todo lo de acá lo tenés que correr vos
 en el servidor. Si algo falla, pegame el mensaje de error exacto y lo
@@ -193,3 +200,54 @@ php artisan route:cache
 - [ ] `storage/` y `bootstrap/cache/` escribibles.
 - [ ] `GET /up` responde 200.
 - [ ] `GET /api/funds` responde `[]` (o los fondos reales, si ya cargaste alguno).
+
+## Problemas reales que aparecieron en el primer deploy
+
+Ninguno de estos estaba en la guía original — quedan documentados acá
+para la próxima vez.
+
+### 1. `composer install` fallaba: "your php version (8.3.30) does not satisfy that requirement"
+
+El `composer.lock` se había generado en un entorno con PHP 8.4, y
+Composer resolvió versiones de Symfony (8.1.x) que exigen PHP 8.4+,
+aunque `composer.json` pide `^8.3`. Se corrigió fijando
+`platform.php: 8.3.30` en `composer.json` y regenerando el lock con
+`composer update` — ya está corregido en el repo, no debería volver a
+pasar. Si alguna vez actualizás dependencias (`composer update`) desde
+una máquina con PHP distinto al del hosting (8.3.x), puede volver a
+pasar — correlo con el mismo `platform.php` seteado, o directamente en
+un entorno con PHP 8.3.
+
+### 2. `composer install` interrumpido: "The Process class relies on proc_open, which is not available"
+
+Este hosting tiene `proc_open` deshabilitado (restricción de seguridad
+normal en hosting compartido). Composer lo necesita para el hook
+automático `@php artisan package:discover` que corre al final de la
+instalación. Los paquetes sí se instalan bien — solo falla ese último
+paso automático. Se soluciona corriendo el comando a mano después,
+directo desde la terminal (no como sub-proceso de Composer, así no
+necesita `proc_open`):
+
+```bash
+php artisan package:discover --ansi
+```
+
+### 3. Document root mal armado en cPanel → carpeta anidada
+
+cPanel en este hosting no deja poner una ruta de Document Root
+arbitraria al crear un subdominio: fuerza `<public_html del dominio
+padre>/<nombre del subdominio>`. Si subís el código a otro lado y
+después lo movés con `mv origen destino` cuando `destino` ya existe
+(porque cPanel ya creó esa carpeta con una página de parking), `mv` NO
+reemplaza el contenido — mete la carpeta origen **un nivel más adentro**
+de lo esperado (`destino/origen/` en vez de reemplazar `destino/`).
+
+Lección: antes de crear el subdominio, primero mirá con `ls -la` qué
+document root te va a asignar cPanel (suele ser
+`domains/<dominio>/public_html/<subdominio>/`), y subí o mové el código
+**directo a esa ruta exacta**, en vez de subirlo a otro lado y mover
+después. Si igual movés una carpeta, verificá con `pwd` que tu terminal
+esté realmente parada donde pensás — si movés la carpeta en la que estás
+parado, `pwd` (en bash) sigue mostrando la ruta vieja aunque la carpeta
+física ya esté en otro lado, lo que puede hacer que comandos posteriores
+(`rm -rf`, etc.) actúen sobre el lugar equivocado sin avisar.

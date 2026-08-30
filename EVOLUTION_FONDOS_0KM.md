@@ -86,9 +86,9 @@ al backend. Orden de ejecución acordado (16 pasos), estado a la fecha:
 | 4 | Policies + Form Requests (autorización por rol, sin RLS) | ✅ |
 | 5-6 | `LeadScoringService`, Controllers públicos/admin, rutas API, 35 tests Feature en verde | ✅ |
 | 7 | Seeders de desarrollo (roles + fondos `[DEV]`), bloqueados en producción | ✅ |
-| 8 | `DEPLOY_API.md`, `ENVIRONMENT.md`, `MakeSuperAdmin` command | ✅ (este commit) |
-| — | Crear el proyecto MySQL real en el hosting y desplegar (`DEPLOY_API.md`) | ⬜ Pendiente — requiere acceso al servidor que solo tiene Nahuel |
-| — | Fase D: conectar el frontend (`src/lib/api.js`, `scoring.js`, `Diagnostico.jsx`, `WhatsAppButton.jsx`) a esta API en vez de Supabase/placeholders | ⬜ Pendiente |
+| 8 | `DEPLOY_API.md`, `ENVIRONMENT.md`, `MakeSuperAdmin` command | ✅ |
+| 9 | Desplegar `api/` en el hosting real (MySQL creada, migrado, primer super_admin) | ✅ (2026-08-30) — `https://api.fondos.0km.app` en producción, confirmado con `/up`, `/api/funds`, login + `/api/admin/dashboard` reales |
+| — | Fase D: conectar el frontend (`src/lib/api.js`, `scoring.js`, `Diagnostico.jsx`, `WhatsAppButton.jsx`) a esta API en vez de Supabase/placeholders | ⬜ Pendiente — próximo paso lógico, ya hay backend real para apuntar |
 | — | Design System 0km (`DESIGN_SYSTEM_0KM.md`) | ⬜ Pendiente — esperando capturas de `0km.app` |
 | — | Cargar 5-10 fondos reales verificados | ⬜ Pendiente — requiere fuentes oficiales |
 | — | Admin `/admin` en el frontend (hoy solo existe la API) | ⬜ Pendiente |
