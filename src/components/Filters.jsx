@@ -8,7 +8,7 @@ export default function Filters({ filters, onChange }) {
       <select
         value={filters.categoria}
         onChange={set("categoria")}
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        className="border border-slate-700 bg-slate-900 text-slate-300 rounded-lg px-3 py-2 text-sm"
       >
         <option value="">Todas las categorías</option>
         {CATEGORIAS.map((c) => (
@@ -19,7 +19,7 @@ export default function Filters({ filters, onChange }) {
       <select
         value={filters.region}
         onChange={set("region")}
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        className="border border-slate-700 bg-slate-900 text-slate-300 rounded-lg px-3 py-2 text-sm"
       >
         <option value="">Todas las regiones</option>
         {REGIONES.map((r) => (
@@ -30,7 +30,7 @@ export default function Filters({ filters, onChange }) {
       <select
         value={filters.estado}
         onChange={set("estado")}
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        className="border border-slate-700 bg-slate-900 text-slate-300 rounded-lg px-3 py-2 text-sm"
       >
         <option value="">Todos los estados</option>
         {ESTADOS_FONDO.map((s) => (

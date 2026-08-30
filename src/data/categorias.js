@@ -34,12 +34,12 @@ export const ESTADO_LABELS = {
 };
 
 export const ESTADO_COLORS = {
-  proximo: "bg-blue-100 text-blue-800",
-  abierto: "bg-green-100 text-green-800",
-  cerrado: "bg-gray-200 text-gray-700",
-  finalizado: "bg-gray-200 text-gray-500",
-  permanente: "bg-purple-100 text-purple-800",
-  por_confirmar: "bg-yellow-100 text-yellow-800",
+  proximo: "bg-blue-500/10 text-blue-300 border border-blue-500/30",
+  abierto: "bg-green-500/10 text-green-300 border border-green-500/30",
+  cerrado: "bg-slate-500/10 text-slate-400 border border-slate-500/30",
+  finalizado: "bg-slate-500/10 text-slate-500 border border-slate-500/20",
+  permanente: "bg-purple-500/10 text-purple-300 border border-purple-500/30",
+  por_confirmar: "bg-yellow-500/10 text-yellow-300 border border-yellow-500/30",
 };
 
 export const REGIONES = [

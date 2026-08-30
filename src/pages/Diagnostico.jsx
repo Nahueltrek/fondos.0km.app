@@ -97,23 +97,23 @@ export default function Diagnostico() {
     const soluciones = solucionesRecomendadas(form);
     return (
       <div className="max-w-2xl mx-auto px-4 py-10">
-        <h1 className="text-2xl font-bold text-brand-dark mb-6">Tu diagnóstico</h1>
+        <h1 className="text-2xl font-bold text-white mb-6">Tu diagnóstico</h1>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
-          <h2 className="font-semibold text-brand-dark mb-1">Perfil del proyecto</h2>
-          <p className="text-sm text-gray-700">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-4">
+          <h2 className="font-semibold text-white mb-1">Perfil del proyecto</h2>
+          <p className="text-sm text-slate-300">
             Tipo: {form.tipo || "—"} · Etapa: {form.etapa || "—"}
           </p>
-          <p className="text-sm text-gray-700 mt-1">
+          <p className="text-sm text-slate-300 mt-1">
             Nivel de digitalización estimado:{" "}
             <strong>{nivelDigitalizacion(form)}</strong>
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
-          <h2 className="font-semibold text-brand-dark mb-2">Soluciones recomendadas</h2>
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-4">
+          <h2 className="font-semibold text-white mb-2">Soluciones recomendadas</h2>
           {soluciones.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500">
               No encontramos una coincidencia clara todavía — cuéntanos más por WhatsApp.
             </p>
           ) : (
@@ -129,7 +129,7 @@ export default function Diagnostico() {
         </div>
 
         {leadResult && !leadResult.saved && (
-          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
+          <p className="text-xs text-amber-400 bg-amber-950/40 border border-amber-800/40 rounded-md p-3 mb-4">
             Tus respuestas no se guardaron en un sistema todavía (no hay backend
             de leads configurado en este ambiente). Escríbenos por WhatsApp
             para que no se pierdan.
@@ -137,9 +137,9 @@ export default function Diagnostico() {
         )}
 
         {fondoRelacionado && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
-            <h2 className="font-semibold text-brand-dark mb-1">Fondo relacionado</h2>
-            <p className="text-sm text-gray-700">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-4">
+            <h2 className="font-semibold text-white mb-1">Fondo relacionado</h2>
+            <p className="text-sm text-slate-300">
               Este diagnóstico se originó desde el fondo{" "}
               <Link to={`/fondos/${fondoRelacionado}`} className="text-brand font-medium">
                 {fondoRelacionado}
@@ -149,7 +149,7 @@ export default function Diagnostico() {
           </div>
         )}
 
-        <div className="bg-brand text-white rounded-xl p-6 text-center">
+        <div className="bg-brand text-slate-900 rounded-xl p-6 text-center">
           <p className="mb-3 font-medium">Próximo paso: conversemos sobre tu proyecto.</p>
           <a
             href={`https://wa.me/?text=${encodeURIComponent(
@@ -157,7 +157,7 @@ export default function Diagnostico() {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-white text-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-brand-light transition"
+            className="inline-block bg-slate-950 text-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-brand-light transition"
           >
             Escribir por WhatsApp
           </a>
@@ -168,8 +168,8 @@ export default function Diagnostico() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-brand-dark mb-2">Diagnóstico de tu proyecto</h1>
-      <p className="text-sm text-gray-500 mb-8">
+      <h1 className="text-2xl font-bold text-white mb-2">Diagnóstico de tu proyecto</h1>
+      <p className="text-sm text-slate-500 mb-8">
         Paso {step + 1} de {STEPS.length}
       </p>
 
@@ -223,13 +223,13 @@ export default function Diagnostico() {
         )}
 
         <div className="flex justify-between mt-8">
-          <button type="button" onClick={back} disabled={step === 0} className="text-sm text-gray-500 disabled:opacity-0">
+          <button type="button" onClick={back} disabled={step === 0} className="text-sm text-slate-500 disabled:opacity-0">
             Atrás
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="bg-brand text-white font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60"
+            className="bg-brand text-slate-900 font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60"
           >
             {step === STEPS.length - 1 ? (submitting ? "Guardando…" : "Ver resultado") : "Siguiente"}
           </button>
@@ -242,7 +242,7 @@ export default function Diagnostico() {
 function Step({ label, children }) {
   return (
     <div>
-      <label className="block font-medium text-brand-dark mb-2">{label}</label>
+      <label className="block font-medium text-white mb-2">{label}</label>
       {children}
     </div>
   );

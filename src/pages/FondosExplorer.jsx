@@ -73,7 +73,7 @@ export default function FondosExplorer() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-brand-dark mb-6">Explorador de fondos</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Explorador de fondos</h1>
 
       <div className="space-y-3 mb-8">
         <SearchBar value={query} onChange={setQuery} />
@@ -81,9 +81,9 @@ export default function FondosExplorer() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Cargando fondos…</p>
+        <p className="text-slate-500">Cargando fondos…</p>
       ) : filtered.length === 0 ? (
-        <p className="text-gray-500">
+        <p className="text-slate-500">
           No encontramos fondos con esos filtros. Prueba ajustando la búsqueda.
         </p>
       ) : (

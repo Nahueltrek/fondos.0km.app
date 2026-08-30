@@ -49,21 +49,21 @@ export default function Checklist() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-brand-dark mb-2">
+      <h1 className="text-2xl font-bold text-white mb-2">
         Checklist de digitalización para emprendedores
       </h1>
-      <p className="text-gray-600 mb-8">
+      <p className="text-slate-400 mb-8">
         13 preguntas simples para saber en qué etapa está tu negocio y qué
         te conviene mejorar primero.
       </p>
 
       <div className="space-y-5 mb-10">
         {CHECKLIST_GRUPOS.map((grupo) => (
-          <div key={grupo.titulo} className="bg-white border border-gray-200 rounded-xl p-5">
-            <h2 className="font-semibold text-brand-dark mb-3">{grupo.titulo}</h2>
+          <div key={grupo.titulo} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <h2 className="font-semibold text-white mb-3">{grupo.titulo}</h2>
             <ul className="space-y-2">
               {grupo.items.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
+                <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
                   <Check size={16} className="text-brand mt-0.5 shrink-0" />
                   {item}
                 </li>
@@ -75,7 +75,7 @@ export default function Checklist() {
 
       {done ? (
         <div className="bg-brand-light border border-brand/20 rounded-xl p-6 text-center">
-          <p className="text-brand-dark font-medium mb-3">
+          <p className="text-white font-medium mb-3">
             ¡Listo! Descargamos tu checklist.
           </p>
           <Link to="/diagnostico" className="text-brand font-medium">
@@ -83,9 +83,9 @@ export default function Checklist() {
           </Link>
         </div>
       ) : (
-        <form onSubmit={submit} className="bg-white border border-gray-200 rounded-xl p-6">
-          <h2 className="font-semibold text-brand-dark mb-1">Descargar checklist</h2>
-          <p className="text-sm text-gray-500 mb-4">
+        <form onSubmit={submit} className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h2 className="font-semibold text-white mb-1">Descargar checklist</h2>
+          <p className="text-sm text-slate-500 mb-4">
             Te lo dejamos en un archivo descargable.
           </p>
           <div className="space-y-3 mb-4">
@@ -102,7 +102,7 @@ export default function Checklist() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-brand text-white font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full bg-brand text-slate-900 font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60 flex items-center justify-center gap-2"
           >
             <Download size={18} />
             {submitting ? "Preparando…" : "Descargar checklist"}

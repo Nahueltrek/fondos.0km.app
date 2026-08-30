@@ -21,13 +21,13 @@ export default function FondoDetail() {
   }, [slug]);
 
   if (fondo === undefined) {
-    return <p className="max-w-3xl mx-auto px-4 py-10 text-gray-500">Cargando…</p>;
+    return <p className="max-w-3xl mx-auto px-4 py-10 text-slate-500">Cargando…</p>;
   }
 
   if (fondo === null) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10">
-        <p className="text-gray-600">No encontramos este fondo.</p>
+        <p className="text-slate-400">No encontramos este fondo.</p>
         <Link to="/fondos" className="text-brand font-medium">Volver al explorador</Link>
       </div>
     );
@@ -36,42 +36,42 @@ export default function FondoDetail() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="flex items-start justify-between gap-3 mb-3">
-        <h1 className="text-2xl font-bold text-brand-dark">{fondo.name}</h1>
+        <h1 className="text-2xl font-bold text-white">{fondo.name}</h1>
         <FundStatusBadge status={fondo.status} />
       </div>
 
-      <p className="text-gray-600 flex items-center gap-1 mb-1">
+      <p className="text-slate-400 flex items-center gap-1 mb-1">
         <Building2 size={16} /> {fondo.institution}
       </p>
       {fondo.regions?.length > 0 && (
-        <p className="text-gray-600 flex items-center gap-1 mb-6">
+        <p className="text-slate-400 flex items-center gap-1 mb-6">
           <MapPin size={16} /> {fondo.regions.join(", ")}
         </p>
       )}
 
       <div className="space-y-6">
         <section>
-          <h2 className="font-semibold text-brand-dark mb-1">¿De qué se trata?</h2>
-          <p className="text-gray-700 text-sm">{fondo.description}</p>
+          <h2 className="font-semibold text-white mb-1">¿De qué se trata?</h2>
+          <p className="text-slate-300 text-sm">{fondo.description}</p>
         </section>
 
         <section>
-          <h2 className="font-semibold text-brand-dark mb-1">¿Quiénes pueden postular?</h2>
-          <p className="text-gray-700 text-sm">{fondo.beneficiaries}</p>
+          <h2 className="font-semibold text-white mb-1">¿Quiénes pueden postular?</h2>
+          <p className="text-slate-300 text-sm">{fondo.beneficiaries}</p>
         </section>
 
         <section>
-          <h2 className="font-semibold text-brand-dark mb-1">¿Cuánto financia?</h2>
-          <p className="text-gray-700 text-sm">
+          <h2 className="font-semibold text-white mb-1">¿Cuánto financia?</h2>
+          <p className="text-slate-300 text-sm">
             {fondo.amount} {fondo.cofinancing ? `· Cofinanciamiento: ${fondo.cofinancing}` : ""}
           </p>
         </section>
 
         <section>
-          <h2 className="font-semibold text-brand-dark mb-1">¿Qué tipo de proyecto busca?</h2>
+          <h2 className="font-semibold text-white mb-1">¿Qué tipo de proyecto busca?</h2>
           <div className="flex flex-wrap gap-1.5">
             {fondo.categories?.map((c) => (
-              <span key={c} className="text-xs bg-brand-light text-brand-dark px-2 py-0.5 rounded-full">
+              <span key={c} className="text-xs bg-brand-light text-brand px-2 py-0.5 rounded-full">
                 {c}
               </span>
             ))}
@@ -80,10 +80,10 @@ export default function FondoDetail() {
 
         {(fondo.application_start || fondo.application_end) && (
           <section>
-            <h2 className="font-semibold text-brand-dark mb-1 flex items-center gap-1">
+            <h2 className="font-semibold text-white mb-1 flex items-center gap-1">
               <Calendar size={16} /> Fechas
             </h2>
-            <p className="text-gray-700 text-sm">
+            <p className="text-slate-300 text-sm">
               {fondo.application_start ?? "?"} — {fondo.application_end ?? "?"}
             </p>
           </section>
@@ -91,7 +91,7 @@ export default function FondoDetail() {
 
         {fondo.official_url && (
           <section>
-            <h2 className="font-semibold text-brand-dark mb-1">Información oficial</h2>
+            <h2 className="font-semibold text-white mb-1">Información oficial</h2>
             <a
               href={fondo.official_url}
               target="_blank"
@@ -106,11 +106,11 @@ export default function FondoDetail() {
 
       <DisclaimerBanner compact />
 
-      <div className="mt-8 bg-brand text-white rounded-xl p-6 text-center">
+      <div className="mt-8 bg-brand text-slate-900 rounded-xl p-6 text-center">
         <p className="mb-3 font-medium">¿Quieres convertir esta oportunidad en un proyecto?</p>
         <Link
           to={`/diagnostico?fondo=${fondo.slug}`}
-          className="inline-block bg-white text-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-brand-light transition"
+          className="inline-block bg-slate-950 text-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-brand-light transition"
         >
           Evaluar mi proyecto
         </Link>

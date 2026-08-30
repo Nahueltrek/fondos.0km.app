@@ -6,8 +6,12 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  @apply bg-slate-950;
+}
+
 @layer components {
   .input {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20;
+    @apply w-full border border-slate-700 bg-slate-900 text-white placeholder-slate-500 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20;
   }
 }

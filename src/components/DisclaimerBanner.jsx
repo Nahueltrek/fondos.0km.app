@@ -3,7 +3,7 @@
 export default function DisclaimerBanner({ compact = false }) {
   return (
     <div
-      className={`bg-brand-light border border-brand/20 rounded-lg text-brand-dark ${
+      className={`bg-brand-light border border-brand/20 rounded-lg text-slate-300 ${
         compact ? "p-3 text-xs" : "p-4 text-sm"
       }`}
     >
