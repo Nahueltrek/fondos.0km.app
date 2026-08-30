@@ -5,8 +5,10 @@ import Filters from "../components/Filters";
 import FundCard from "../components/FundCard";
 import { fetchFondos } from "../lib/api";
 import { track } from "../lib/analytics";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 export default function FondosExplorer() {
+  useDocumentTitle("Explorador de fondos");
   const [searchParams, setSearchParams] = useSearchParams();
   const [fondos, setFondos] = useState([]);
   const [loading, setLoading] = useState(true);

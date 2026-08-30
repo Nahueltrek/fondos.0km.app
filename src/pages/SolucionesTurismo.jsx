@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 // Master Plan, sección 23.
 const ITEMS = [
@@ -15,6 +16,7 @@ const ITEMS = [
 ];
 
 export default function SolucionesTurismo() {
+  useDocumentTitle("Turismo Digital");
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <span className="inline-block text-xs font-semibold tracking-wide text-brand bg-brand-light rounded-full px-3 py-1 mb-4">

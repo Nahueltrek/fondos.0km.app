@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap estático, mantenido a mano por ahora. Incluye solo rutas fijas y
+  artículos de blog reales. Las fichas de fondo (/fondos/[slug]) NO se
+  listan acá todavía porque los datos actuales son placeholders de ejemplo
+  (ver DATA_GOVERNANCE_FONDOS_0KM.md) — cuando haya fondos reales curados en
+  Supabase, este archivo debe generarse dinámicamente a partir de esa tabla.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://fondos.0km.app/</loc></url>
+  <url><loc>https://fondos.0km.app/fondos</loc></url>
+  <url><loc>https://fondos.0km.app/diagnostico</loc></url>
+  <url><loc>https://fondos.0km.app/soluciones</loc></url>
+  <url><loc>https://fondos.0km.app/soluciones/turismo</loc></url>
+  <url><loc>https://fondos.0km.app/blog</loc></url>
+  <url><loc>https://fondos.0km.app/blog/que-son-los-fondos-concursables</loc></url>
+  <url><loc>https://fondos.0km.app/blog/como-digitalizar-una-pyme</loc></url>
+  <url><loc>https://fondos.0km.app/blog/web-o-sistema-que-necesita-mi-negocio</loc></url>
+  <url><loc>https://fondos.0km.app/checklist</loc></url>
+</urlset>

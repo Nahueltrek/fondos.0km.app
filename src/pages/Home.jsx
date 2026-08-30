@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import { CATEGORIAS } from "../data/categorias";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "fondos.0km.app — Encuentra la oportunidad para hacer crecer tu proyecto";
+  }, []);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
@@ -59,6 +62,20 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
+      <section className="max-w-3xl mx-auto px-4 py-10">
+        <Link
+          to="/checklist"
+          className="block bg-white border border-gray-200 rounded-xl p-5 hover:border-brand transition text-center"
+        >
+          <p className="font-semibold text-brand-dark mb-1">
+            Checklist de digitalización para emprendedores →
+          </p>
+          <p className="text-sm text-gray-600">
+            13 preguntas gratis para saber en qué etapa está tu negocio.
+          </p>
+        </Link>
       </section>
     </div>
   );

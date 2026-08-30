@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BLOG_POSTS, BLOG_CATEGORIAS } from "../data/blogPosts";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 export default function Blog() {
+  useDocumentTitle("Blog");
   const [categoria, setCategoria] = useState("");
 
   const filtered = categoria

@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { SOLUCIONES } from "../data/soluciones";
 import { PACKS } from "../data/packs";
 import { track } from "../lib/analytics";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 export default function Soluciones() {
+  useDocumentTitle("Soluciones 0km");
   useEffect(() => {
     track("solution_viewed", { page: "soluciones" });
   }, []);

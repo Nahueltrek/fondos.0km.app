@@ -10,6 +10,7 @@ import Soluciones from "./pages/Soluciones";
 import SolucionesTurismo from "./pages/SolucionesTurismo";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Checklist from "./pages/Checklist";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/soluciones/turismo" element={<SolucionesTurismo />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/checklist" element={<Checklist />} />
         </Routes>
       </main>
       <Footer />

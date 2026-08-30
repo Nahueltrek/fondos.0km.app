@@ -7,6 +7,7 @@ import { fundWhatsAppMessage } from "../components/WhatsAppButton";
 import { createLead } from "../lib/api";
 import { scoreLead } from "../lib/scoring";
 import { track } from "../lib/analytics";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 const ETAPAS = ["Idea", "Postulación", "Fondo adjudicado", "Ejecución", "Negocio funcionando"];
 
@@ -44,6 +45,7 @@ function solucionesRecomendadas(form) {
 }
 
 export default function Diagnostico() {
+  useDocumentTitle("Diagnóstico de tu proyecto");
   const [searchParams] = useSearchParams();
   const fondoRelacionado = searchParams.get("fondo");
   const [step, setStep] = useState(0);
