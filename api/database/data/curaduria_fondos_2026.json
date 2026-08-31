@@ -36,7 +36,7 @@
     "cofinancing": null,
     "application_start": null,
     "application_end": null,
-    "status": "por_confirmar",
+    "status": "cerrado",
     "categories": ["digitalizacion", "software", "tecnologia"],
     "eligible_expenses": "Sitio web, software de contabilidad/CRM, sistemas ERP para inventario y/o facturación electrónica, herramientas de marketing y posicionamiento web.",
     "official_url": "https://www.sercotec.cl/convocatoria/ruta-digital-kit-digital-region-del-biobio-2026/",
@@ -44,8 +44,8 @@
     "source_url": "https://www.sercotec.cl/convocatoria/ruta-digital-kit-digital-region-del-biobio-2026/",
     "source_type": "official_web",
     "source_reference": "Página de convocatoria Ruta Digital Kit Digital Región del Biobío 2026 (sercotec.cl)",
-    "verification_status": "needs_review",
-    "verification_notes": "Programa y monto confirmados a nivel nacional del instrumento (mismo Kit Digital que RM); fecha exacta de postulación para esta región específica NO confirmada en el fragmento visible — requiere revisar la URL oficial antes de comunicar como abierta. Potencial 0km: A. Prioridad comercial: 1."
+    "verification_status": "expired",
+    "verification_notes": "Confirmado por Nahuel el 2026-08-30 visitando la URL oficial: la página muestra \"Convocatoria No disponible\". No hay edición vigente de este instrumento para esta región a la fecha. Potencial 0km: A. Prioridad comercial: 1. Revisar de nuevo si Sercotec reabre esta línea regional."
   },
   {
     "name": "Ruta Digital – Kit Digital, Región de La Araucanía 2026",
@@ -60,7 +60,7 @@
     "cofinancing": null,
     "application_start": null,
     "application_end": null,
-    "status": "por_confirmar",
+    "status": "cerrado",
     "categories": ["digitalizacion", "software", "tecnologia"],
     "eligible_expenses": "Sitio web, software de contabilidad/CRM, sistemas ERP para inventario y/o facturación electrónica, herramientas de marketing y posicionamiento web.",
     "official_url": "https://www.sercotec.cl/convocatoria/ruta-digital-kit-digital-region-de-la-araucania-2026/",
@@ -68,8 +68,8 @@
     "source_url": "https://www.sercotec.cl/convocatoria/ruta-digital-kit-digital-region-de-la-araucania-2026/",
     "source_type": "official_web",
     "source_reference": "Página de convocatoria Ruta Digital Kit Digital Región de La Araucanía 2026 (sercotec.cl)",
-    "verification_status": "needs_review",
-    "verification_notes": "Programa y monto confirmados a nivel nacional del instrumento; fecha exacta de postulación para esta región NO confirmada en el fragmento visible. Potencial 0km: A. Prioridad comercial: 1."
+    "verification_status": "expired",
+    "verification_notes": "Confirmado por Nahuel el 2026-08-30 visitando la URL oficial: la página muestra \"Convocatoria No disponible\". No hay edición vigente de este instrumento para esta región a la fecha. Potencial 0km: A. Prioridad comercial: 1. Revisar de nuevo si Sercotec reabre esta línea regional."
   },
   {
     "name": "Ruta Digital – Kit Digital, Región de Ñuble 2026",
