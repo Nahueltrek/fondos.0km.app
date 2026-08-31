@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import {
+  Lightbulb, FileText, Trophy, Hammer, TrendingUp,
+  Rocket, Cpu, Zap, MountainSnow, ShoppingBag, Wheat, Leaf, Recycle,
+  Megaphone, Laptop, Palette, Users, Check, ChevronLeft,
+} from "lucide-react";
 import { CATEGORIAS } from "../data/categorias";
 import { SOLUCIONES } from "../data/soluciones";
 import MatchingDisclaimer from "../components/MatchingDisclaimer";
@@ -8,16 +13,32 @@ import { createLead } from "../lib/api";
 import { track } from "../lib/analytics";
 import { useDocumentTitle } from "../lib/useDocumentTitle";
 
-const ETAPAS = ["Idea", "Postulación", "Fondo adjudicado", "Ejecución", "Negocio funcionando"];
-
-const STEPS = [
-  "tipo",
-  "etapa",
-  "mejorar",
-  "problema",
-  "recursos",
-  "contacto",
+const ETAPAS = [
+  { label: "Idea", desc: "Todavía no arranca", icon: Lightbulb },
+  { label: "Postulación", desc: "Preparando una postulación", icon: FileText },
+  { label: "Fondo adjudicado", desc: "Ya tienes financiamiento", icon: Trophy },
+  { label: "Ejecución", desc: "Desarrollando el proyecto", icon: Hammer },
+  { label: "Negocio funcionando", desc: "Ya estás operando", icon: TrendingUp },
 ];
+
+const CATEGORIA_ICONS = {
+  Emprendimiento: Rocket,
+  Digitalización: Cpu,
+  Innovación: Zap,
+  Turismo: MountainSnow,
+  Comercio: ShoppingBag,
+  Agricultura: Wheat,
+  Sostenibilidad: Leaf,
+  "Economía Circular": Recycle,
+  Marketing: Megaphone,
+  Tecnología: Laptop,
+  Cultura: Palette,
+  Organizaciones: Users,
+};
+
+// "perfil" reemplaza los antiguos pasos separados "tipo" y "etapa": misma
+// información, un paso menos y selección por tarjetas en vez de <select>.
+const STEPS = ["perfil", "mejorar", "problema", "recursos", "contacto"];
 
 const initialForm = {
   tipo: "",
@@ -43,6 +64,50 @@ function solucionesRecomendadas(form) {
   ).slice(0, 4);
 }
 
+function SelectableCard({ icon: Icon, label, desc, compact, selected, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`relative text-left rounded-2xl border transition-all duration-150 ${
+        compact ? "p-3.5 flex flex-col gap-2.5" : "p-4 flex items-center gap-3.5"
+      } ${
+        selected
+          ? "bg-brand-light border-brand"
+          : "bg-slate-900 border-slate-800 hover:border-slate-700"
+      }`}
+    >
+      <div
+        className={`shrink-0 rounded-xl flex items-center justify-center transition-colors ${
+          compact ? "w-9 h-9" : "w-11 h-11"
+        } ${selected ? "bg-brand text-slate-900" : "bg-slate-800 text-brand"}`}
+      >
+        <Icon size={compact ? 17 : 20} strokeWidth={2} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className={`font-medium text-white ${compact ? "text-[13px] leading-snug" : "text-[15px]"}`}>
+          {label}
+        </div>
+        {desc && !compact && <div className="text-[13px] text-slate-500 mt-0.5">{desc}</div>}
+      </div>
+      {!compact && (
+        <div
+          className={`shrink-0 w-5 h-5 rounded-full border flex items-center justify-center ${
+            selected ? "bg-brand border-brand" : "border-slate-700"
+          }`}
+        >
+          {selected && <Check size={12} strokeWidth={3} className="text-slate-900" />}
+        </div>
+      )}
+      {compact && selected && (
+        <div className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-brand flex items-center justify-center">
+          <Check size={10} strokeWidth={3} className="text-slate-900" />
+        </div>
+      )}
+    </button>
+  );
+}
+
 export default function Diagnostico() {
   useDocumentTitle("Diagnóstico de tu proyecto");
   const [searchParams] = useSearchParams();
@@ -54,6 +119,10 @@ export default function Diagnostico() {
   const [submitting, setSubmitting] = useState(false);
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const set = (key) => (value) => setForm({ ...form, [key]: value });
+
+  const canAdvance = step !== 0 || (!!form.tipo && !!form.etapa);
+
   const next = () => {
     if (step === 0) track("diagnostic_started", { tipo: form.tipo });
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -158,53 +227,90 @@ export default function Diagnostico() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-white mb-2">Diagnóstico de tu proyecto</h1>
-      <p className="text-sm text-slate-500 mb-8">
-        Paso {step + 1} de {STEPS.length}
-      </p>
+      {/* Progreso */}
+      <div className="flex items-center gap-2 mb-6">
+        {step > 0 ? (
+          <button
+            type="button"
+            onClick={back}
+            aria-label="Volver"
+            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+          >
+            <ChevronLeft size={20} />
+          </button>
+        ) : (
+          <div className="w-9" />
+        )}
+        <div className="flex-1 flex gap-1.5">
+          {STEPS.map((s, i) => (
+            <div
+              key={s}
+              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                i <= step ? "bg-brand" : "bg-slate-800"
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-xs text-slate-500 tabular-nums w-10 text-right">
+          {step + 1}/{STEPS.length}
+        </span>
+      </div>
 
       <form onSubmit={step === STEPS.length - 1 ? submit : (e) => { e.preventDefault(); next(); }}>
         {step === 0 && (
-          <Step label="¿Qué tipo de proyecto tienes?">
-            <select value={form.tipo} onChange={update("tipo")} required className="input">
-              <option value="">Selecciona una categoría</option>
+          <div>
+            <h1 className="text-xl font-semibold text-white mb-1">Cuéntanos de tu proyecto</h1>
+            <p className="text-sm text-slate-500 mb-6">Elige el tipo y la etapa en la que estás.</p>
+
+            <p className="text-sm font-medium text-slate-300 mb-2.5">¿Qué tipo de proyecto tienes?</p>
+            <div className="grid grid-cols-2 gap-2.5 mb-7">
               {CATEGORIAS.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <SelectableCard
+                  key={c}
+                  icon={CATEGORIA_ICONS[c] ?? Rocket}
+                  label={c}
+                  compact
+                  selected={form.tipo === c}
+                  onClick={() => set("tipo")(c)}
+                />
               ))}
-            </select>
-          </Step>
+            </div>
+
+            <p className="text-sm font-medium text-slate-300 mb-2.5">¿En qué etapa estás?</p>
+            <div className="flex flex-col gap-2.5">
+              {ETAPAS.map((e) => (
+                <SelectableCard
+                  key={e.label}
+                  icon={e.icon}
+                  label={e.label}
+                  desc={e.desc}
+                  selected={form.etapa === e.label}
+                  onClick={() => set("etapa")(e.label)}
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         {step === 1 && (
-          <Step label="¿En qué etapa estás?">
-            <select value={form.etapa} onChange={update("etapa")} required className="input">
-              <option value="">Selecciona una etapa</option>
-              {ETAPAS.map((e) => (
-                <option key={e} value={e}>{e}</option>
-              ))}
-            </select>
-          </Step>
-        )}
-
-        {step === 2 && (
           <Step label="¿Qué quieres mejorar?">
             <textarea value={form.mejorar} onChange={update("mejorar")} required className="input" rows={3} />
           </Step>
         )}
 
-        {step === 3 && (
+        {step === 2 && (
           <Step label="¿Qué problema tienes?">
             <textarea value={form.problema} onChange={update("problema")} required className="input" rows={3} />
           </Step>
         )}
 
-        {step === 4 && (
+        {step === 3 && (
           <Step label="¿Qué recursos tienes?">
             <textarea value={form.recursos} onChange={update("recursos")} required className="input" rows={3} />
           </Step>
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <Step label="Datos de contacto">
             <input value={form.nombre} onChange={update("nombre")} required placeholder="Nombre" className="input mb-2" />
             <input value={form.email} onChange={update("email")} required type="email" placeholder="Email" className="input mb-2" />
@@ -212,18 +318,13 @@ export default function Diagnostico() {
           </Step>
         )}
 
-        <div className="flex justify-between mt-8">
-          <button type="button" onClick={back} disabled={step === 0} className="text-sm text-slate-500 disabled:opacity-0">
-            Atrás
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-brand text-slate-900 font-medium px-5 py-2.5 rounded-lg hover:bg-brand-dark transition disabled:opacity-60"
-          >
-            {step === STEPS.length - 1 ? (submitting ? "Guardando…" : "Ver resultado") : "Siguiente"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={submitting || !canAdvance}
+          className="w-full mt-8 bg-brand text-slate-900 font-medium py-3.5 rounded-2xl hover:bg-brand-dark transition disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {step === STEPS.length - 1 ? (submitting ? "Guardando…" : "Ver resultado") : "Continuar"}
+        </button>
       </form>
     </div>
   );
